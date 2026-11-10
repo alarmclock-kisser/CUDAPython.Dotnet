@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	<TargetFramework>net10.0</TargetFramework>
+	<ImplicitUsings>enable</ImplicitUsings>
+	<Nullable>enable</Nullable>
+	<IsPackable>false</IsPackable>
+	<IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+	<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
+	<PackageReference Include="MSTest.TestAdapter" Version="4.5.1" />
+	<PackageReference Include="MSTest.TestFramework" Version="4.5.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<ProjectReference Include="..\CUDAPython.Dotnet.Python\CUDAPython.Dotnet.Python.csproj" />
+  </ItemGroup>
+
+  <Target Name="CopyBundledPythonRuntimeForTests" AfterTargets="Build">
+	<ItemGroup>
+	  <BundledPythonFile Include="..\CUDAPython.Dotnet.Python\bin\$(Configuration)\net10.0\python-env\**\*" />
+	</ItemGroup>
+	<Copy SourceFiles="@(BundledPythonFile)"
+		  DestinationFiles="@(BundledPythonFile->'$(TargetDir)python-env\%(RecursiveDir)%(Filename)%(Extension)')"
+		  SkipUnchangedFiles="true" />
+  </Target>
+
+</Project>

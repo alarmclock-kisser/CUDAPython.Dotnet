@@ -1,0 +1,46 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	<TargetFramework>net10.0</TargetFramework>
+	<ImplicitUsings>enable</ImplicitUsings>
+	<Nullable>enable</Nullable>
+	<IsPackable>true</IsPackable>
+	<IncludeBuildOutput>false</IncludeBuildOutput>
+	<PackageId>CUDAPython.Dotnet.win-x64</PackageId>
+	<Version>0.1.1</Version>
+	<Description>Self-contained Windows x64 .NET wrapper for CUDA Python, including CPython and pip dependencies.</Description>
+	  <PackageReadmeFile>README.md</PackageReadmeFile>
+	  <PackageTags>cuda;python;win-x64</PackageTags>
+	  <!-- Python DLLs and virtual-environment scripts are bundled runtime content, not .NET references or NuGet install scripts. -->
+	<NoWarn>$(NoWarn);NU5100;NU5110;NU5111</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+	<ProjectReference Include="..\CUDAPython.Dotnet.Python\CUDAPython.Dotnet.Python.csproj" PrivateAssets="all" />
+	<PackageReference Include="pythonnet" Version="3.2.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<None Include="..\README.md" Pack="true" PackagePath="/" />
+	<None Include="..\CUDAPython.Dotnet.Python\bin\$(Configuration)\net10.0\CUDAPython.Dotnet.Python.dll"
+		  Pack="true"
+		  PackagePath="lib/net10.0/" />
+	  <None Include="..\CUDAPython.Dotnet.Python\bin\$(Configuration)\net10.0\CUDAPython.Dotnet.Python.xml"
+		  Pack="true"
+		  PackagePath="lib/net10.0/" />
+  </ItemGroup>
+
+  <Target Name="IncludeBundledPythonEnvironment" BeforeTargets="_GetPackageFiles">
+	<Exec Command="powershell.exe -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\..\scripts\Update-CudaPythonEnvironment.ps1&quot; -EnvironmentPath &quot;$(MSBuildProjectDirectory)\..\CUDAPython.Dotnet.Python\bin\$(Configuration)\net10.0\python-env&quot; -Upgrade" />
+	<ItemGroup>
+		<Content Include="..\CUDAPython.Dotnet.Python\bin\$(Configuration)\net10.0\python-env\**\*"
+			   Exclude="..\CUDAPython.Dotnet.Python\bin\$(Configuration)\net10.0\python-env\**\.*">
+		<Pack>true</Pack>
+		<PackagePath>contentFiles/any/net10.0/python-env/%(RecursiveDir)%(Filename)%(Extension)</PackagePath>
+		<PackageCopyToOutput>true</PackageCopyToOutput>
+		<BuildAction>Content</BuildAction>
+	  </Content>
+	</ItemGroup>
+  </Target>
+
+</Project>

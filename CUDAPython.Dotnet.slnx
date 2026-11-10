@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="CUDAPython.Dotnet.Api/CUDAPython.Dotnet.Api.csproj" />
+  <Project Path="CUDAPython.Dotnet.Nuget/CUDAPython.Dotnet.Nuget.csproj" />
+  <Project Path="CUDAPython.Dotnet.Python/CUDAPython.Dotnet.Python.csproj" />
+  <Project Path="CUDAPython.Dotnet.Tests/CUDAPython.Dotnet.Tests.csproj" />
+</Solution>

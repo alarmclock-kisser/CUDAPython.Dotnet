@@ -1,0 +1,48 @@
+@baseUrl = http://localhost:5248
+@adminApiKey = replace-with-CUDAPYTHON_ADMIN_KEY
+
+### API readiness
+GET {{baseUrl}}/api/info
+
+### Bundled Python environment metadata
+GET {{baseUrl}}/api/info/python-environment
+
+### Validate Python packages and CUDA binding imports
+GET {{baseUrl}}/api/info/python-environment/validation
+
+### CUDA driver version and initialization status
+GET {{baseUrl}}/api/info/cuda/driver
+
+### CUDA device specifications
+GET {{baseUrl}}/api/info/cuda/devices
+
+### Discover a page of CUDA Python functions
+GET {{baseUrl}}/api/cuda-python/functions?modulePrefix=cuda.bindings.driver&offset=0&limit=100
+
+### Search discovered CUDA Python functions
+GET {{baseUrl}}/api/cuda-python/functions?search=driver&offset=0&limit=25
+
+### Invoke a public CUDA Python callable (requires a usable NVIDIA driver)
+POST {{baseUrl}}/api/cuda-python/invoke
+Content-Type: application/json
+X-API-Key: {{adminApiKey}}
+
+{
+  "moduleName": "cuda.bindings.driver",
+  "attributePath": "cuDriverGetVersion",
+  "arguments": [],
+  "keywordArguments": {}
+}
+
+### Stage the latest compatible Python environment (Development only; activation requires restart)
+POST {{baseUrl}}/api/maintenance/python-environment/update
+X-API-Key: {{adminApiKey}}
+
+### Build the win-x64 NuGet package (Development only; requires a local repository and .NET SDK)
+POST {{baseUrl}}/api/maintenance/nuget/build
+Content-Type: application/json
+X-API-Key: {{adminApiKey}}
+
+{
+  "configuration": "Release"
+}

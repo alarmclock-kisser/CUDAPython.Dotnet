@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <CUDAPythonProvisionEnvironment Condition="'$(CUDAPythonProvisionEnvironment)' == ''">true</CUDAPythonProvisionEnvironment>
+    <CUDAPythonUpdateEnvironment Condition="'$(CUDAPythonUpdateEnvironment)' == ''">false</CUDAPythonUpdateEnvironment>
+    <CUDAPythonEnvironmentUpdateArgument Condition="'$(CUDAPythonUpdateEnvironment)' == 'true'">-Upgrade</CUDAPythonEnvironmentUpdateArgument>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="pythonnet" Version="3.2.1" />
+  </ItemGroup>
+
+  <Target Name="ValidateBundledPythonRuntime" BeforeTargets="Build" Condition="'$(CUDAPythonProvisionEnvironment)' == 'true'">
+    <Error Condition="'$(OS)' != 'Windows_NT'" Text="The bundled CPython runtime currently supports Windows x64 only. Set CUDAPythonProvisionEnvironment=false to build the managed wrapper only." />
+    <Error Condition="'$(RuntimeIdentifier)' != '' and '$(RuntimeIdentifier)' != 'win-x64'" Text="The bundled CPython runtime supports only the win-x64 RID." />
+  </Target>
+
+  <Target Name="ProvisionBundledPythonRuntime" AfterTargets="Build" Condition="'$(CUDAPythonProvisionEnvironment)' == 'true'">
+    <Exec Command="powershell.exe -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\..\scripts\Update-CudaPythonEnvironment.ps1&quot; -EnvironmentPath &quot;$(TargetDir)python-env&quot; $(CUDAPythonEnvironmentUpdateArgument)" />
+  </Target>
+
+</Project>
