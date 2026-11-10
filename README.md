@@ -49,7 +49,7 @@ Build and pack require network access to the pinned CPython release and PyPI. Th
 
 ## REST API
 
-The .NET 10 API references the wrapper and includes the same self-contained `python-env` beside its assemblies. In Development, the OpenAPI document is available at `/openapi/v1.json` and the interactive Scalar UI at `/swagger`.
+The .NET 10 API references the wrapper and includes the same self-contained `python-env` beside its assemblies. In Development, NSwag generates the OpenAPI document at `/swagger/v1/swagger.json` and serves the familiar interactive Swagger UI at `/swagger`.
 
 | Route | Purpose |
 | --- | --- |

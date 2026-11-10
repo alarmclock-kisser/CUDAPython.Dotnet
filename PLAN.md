@@ -12,7 +12,7 @@ Build a .NET 10 library that discovers and invokes the public callable surface e
 - `CUDAPython.Dotnet.Nuget` creates the `CUDAPython.Dotnet.win-x64` package with the wrapper, CPython, and pip-installed CUDA Python dependencies.
 - `CUDAPython.Dotnet.Tests` contains runtime-configuration tests and a bundled-Python integration test.
 - `scripts/Update-CudaPythonEnvironment.ps1` downloads a pinned standalone CPython build, installs the latest compatible `cuda-python` dependency set, and writes a lock file and relocatable runtime configuration.
-- `CUDAPython.Dotnet.Api` exposes CUDA/Python diagnostics, reflection-based callable discovery and invocation, a Scalar OpenAPI UI, and guarded Development-only environment/package maintenance.
+- `CUDAPython.Dotnet.Api` exposes CUDA/Python diagnostics, reflection-based callable discovery and invocation, the NSwag-generated Swagger UI, and guarded Development-only environment/package maintenance.
 - Staged Python environment updates are promoted during API startup, before CPython initialization.
 - The solution includes the API, wrapper, pack project, and tests.
 
@@ -76,7 +76,7 @@ Build a .NET 10 library that discovers and invokes the public callable surface e
 
 ### 6. REST API
 - [x] Integrate `.Api` against the .NET wrapper and bundle the Python environment beside API assemblies.
-- [x] Add OpenAPI and Scalar UI plus DTO-backed info, environment validation, device/driver, generic discovery/invocation, and maintenance endpoints.
+- [x] Add NSwag-generated OpenAPI and Swagger UI plus DTO-backed info, environment validation, device/driver, generic discovery/invocation, and maintenance endpoints.
 - [x] Protect generic invocation and maintenance operations; stage runtime updates for activation at restart.
 - [x] Add an HTTP request file covering the API routes.
 - [ ] Add automated API tests and account for GPU operation duration and resource limits.

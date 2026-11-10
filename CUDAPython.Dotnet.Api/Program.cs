@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 using CUDAPython.Dotnet.Api.Middleware;
 using CUDAPython.Dotnet.Api.Services;
 using CUDAPython.Dotnet.Python;
-using Scalar.AspNetCore;
+using NSwag.AspNetCore;
 
 namespace CUDAPython.Dotnet.Api
 {
@@ -19,7 +19,7 @@ namespace CUDAPython.Dotnet.Api
             builder.Services.AddControllers()
                 .AddJsonOptions(options =>
                     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
-            builder.Services.AddOpenApi();
+            builder.Services.AddOpenApiDocument(options => options.Title = "CUDA Python API");
             builder.Services.AddProblemDetails();
             builder.Services.AddExceptionHandler<ApiExceptionHandler>();
             builder.Services.AddScoped<AdminApiKeyAuthorizationFilter>();
@@ -38,8 +38,8 @@ namespace CUDAPython.Dotnet.Api
 
             if (app.Environment.IsDevelopment())
             {
-                app.MapOpenApi();
-                app.MapScalarApiReference("/swagger", options => options.WithTitle("CUDA Python API"));
+                app.UseOpenApi();
+                app.UseSwaggerUi();
             }
 
             app.MapControllers();
