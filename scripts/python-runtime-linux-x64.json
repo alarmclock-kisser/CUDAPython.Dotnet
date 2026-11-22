@@ -1,0 +1,10 @@
+{
+  "runtimeId": "linux-x64",
+  "pythonVersion": "3.11.18",
+  "pythonBuildTag": "20261110",
+  "pythonArchiveUrl": "https://github.com/astral-sh/python-build-standalone/releases/download/20261110/cpython-3.11.18%2B20261110-x86_64-unknown-linux-gnu-install_only.tar.gz",
+  "pythonArchiveSha256": "ac0b758b6ae4ba1cb87f7091eb6bb17c9a383a9bcdb5c18493cdd4f34e35ae8c",
+  "cudaPythonRequirement": "cuda-python",
+  "pythonExecutable": "python/bin/python3",
+  "pythonSharedLibrary": "python/lib/libpython3.11.so.1.0"
+}

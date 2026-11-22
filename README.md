@@ -2,19 +2,19 @@
 
 This .NET 10 wrapper embeds CPython and exposes the callable surface of the Python package `cuda-python` through Python.NET. Public module functions and class methods are discovered at runtime with their signatures and documentation, then invoked through descriptors without a host-side Python installation.
 
-## Self-contained Windows x64 package
+## Self-contained Windows x64 and Linux x64 package
 
-`CUDAPython.Dotnet.win-x64` packages the managed wrapper, CPython 3.11.18, the latest `cuda-python` release compatible with CPython 3.11, and all resolved pip dependencies. The build downloads a pinned CPython standalone archive and verifies its SHA-256 before extraction. It installs the Python dependencies into `python-env`, records the resolved package versions in `requirements.lock.txt`, and includes the complete environment in the NuGet package.
+`CUDAPython.Dotnet` (version 0.2.0) packages the managed wrapper, CPython 3.11.18, the latest `cuda-python` release compatible with CPython 3.11, and all resolved pip dependencies. The build downloads a pinned CPython standalone archive and verifies its SHA-256 before extraction. It installs the Python dependencies into `python-env`, records the resolved package versions in `requirements.lock.txt`, and includes the complete environment in the NuGet package.
 
-On first build, `CUDAPython.Dotnet.Python` provisions the environment into its assembly output directory. `dotnet pack -c Release` refreshes the pip dependencies and bundles the resulting environment. A package consumer receives the `python-env` directory beside the application assemblies; no Python installation or startup network access is required on the server.
+The package includes RID-scoped content files for **Windows x64** and **Linux x64**. NuGet copies the `python-env` directory that matches the consuming application's RID beside the application assemblies; no Python installation or startup network access is required. A package built on Windows contains the Windows environment only; the Linux environment is bundled when the package is built on a Linux host (or WSL). The CPython patch version and source archive are pinned per RID in `scripts/python-runtime-win-x64.json` and `scripts/python-runtime-linux-x64.json`.
 
-The initial bundle targets **Windows x64 only**. Linux and other Windows architectures need separate runtime assets and packages. Python.NET 3.2.1 requires Python 3.11 or later; 3.11 is used as the lowest compatible minor version. The CPython patch version and source archive are pinned in `scripts/python-runtime-win-x64.json`.
+Python.NET 3.2.1 is platform-agnostic: on Windows it loads `python311.dll` via `LoadLibrary`; on Linux it dlopen's the CPython shared library. x64 is required on both platforms.
 
 The NVIDIA driver and CUDA-capable GPU remain host requirements for device operations. They cannot be supplied by a Python wheel or this NuGet package. CUDA user-mode components are included only when they are dependencies of the installed pip package set and may be redistributed.
 
 ## Use the runtime
 
-The default initializer loads `python-env/runtime.json` from the application output directory:
+The default initializer loads `python-env-<rid>/runtime.json` (or the legacy `python-env/runtime.json`) from the application output directory, where `<rid>` is `win-x64` or `linux-x64` based on the running OS and architecture:
 
 ```csharp
 using CUDAPython.Dotnet.Python;
@@ -45,11 +45,11 @@ dotnet pack CUDAPython.Dotnet.Nuget\CUDAPython.Dotnet.Nuget.csproj -c Release
 dotnet run --project CUDAPython.Dotnet.Api\CUDAPython.Dotnet.Api.csproj
 ```
 
-Build and pack require network access to the pinned CPython release and PyPI. The deployed application does not. Set `CUDAPythonProvisionEnvironment=false` only when intentionally building the managed wrapper without its bundled runtime.
+Build and pack require network access to the pinned CPython release and PyPI. The deployed application does not. Set `CUDAPythonProvisionEnvironment=false` only when intentionally building the managed wrapper without its bundled runtime. On Windows, the build provisions the `win-x64` environment only; the `linux-x64` environment must be provisioned on a Linux host (or WSL) and is included in the package when present.
 
 ## REST API
 
-The .NET 10 API references the wrapper and includes the same self-contained `python-env` beside its assemblies. In Development, NSwag generates the OpenAPI document at `/swagger/v1/swagger.json` and serves the familiar interactive Swagger UI at `/swagger`.
+The .NET 10 API (Windows x64 only) references the wrapper and includes the same self-contained `python-env` beside its assemblies. In Development, NSwag generates the OpenAPI document at `/swagger/v1/swagger.json` and serves the familiar interactive Swagger UI at `/swagger`. The NuGet library itself is cross-platform (win-x64 and linux-x64); only the API host is Windows-specific.
 
 | Route | Purpose |
 | --- | --- |

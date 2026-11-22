@@ -1,0 +1,58 @@
+NOTICE
+=====
+
+This product bundles software components that are licensed under their own,
+independent licenses. The C# wrapper code in this repository is licensed under
+the MIT License (see the LICENSE file in the repository root).
+
+The following third-party components are included in the bundled Python
+environment (`python-env/`) and are NOT licensed under the MIT License. They
+remain subject to their respective original licenses:
+
+  * CPython 3.11.18
+	  License: Python Software Foundation License (PSF)
+	  Source:  https://docs.python.org/3/license.html
+	  The bundled CPython standalone build is provided by
+	  astral-sh/python-build-standalone
+	  (https://github.com/astral-sh/python-build-standalone).
+
+  * cuda-python, cuda-bindings, cuda-core, cuda-pathfinder
+	  License: NVIDIA Software License / End User License Agreement (EULA)
+	  Source:  https://docs.nvidia.com/cuda/python/
+	  These are NVIDIA CUDA Python wheels. Use is governed by NVIDIA's EULA
+	  and applicable CUDA licensing terms.
+
+  * numpy
+	  License: BSD 3-Clause License
+	  Source:  https://numpy.org/doc/stable/license.html
+
+  * pythonnet 3.2.1
+	  License: BSD 3-Clause License (see the package for details)
+	  Source:  https://github.com/pythonnet/pythonnet
+
+  * pip, setuptools
+	  License: See respective upstream projects
+	  Sources: https://pypi.org/project/pip/, https://pypi.org/project/setuptools/
+
+If a component's license requires attribution or notice to be included in
+distributions, this NOTICE file satisfies that requirement to the extent
+permitted by that license.
+
+---
+
+NO WARRANTY / LIMITATION OF LIABILITY
+------------------------------------
+
+THE BUNDLED COMPONENTS AND THIS WRAPPER ARE PROVIDED "AS IS". TO THE MAXIMUM
+EXTENT PERMITTED BY APPLICABLE LAW, THE AUTHORS AND COPYRIGHT HOLDERS
+DISCLAIM ALL WARRANTIES AND ARE NOT LIABLE FOR ANY DAMAGES (INCLUDING,
+WITHOUT LIMITATION, DIRECT, INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR
+TYPICAL DAMAGES) ARISING FROM THE USE OR INABILITY TO USE THIS SOFTWARE,
+INCLUDING BUT NOT LIMITED TO HARDWARE DAMAGE (E.G., GPU FAILURE, OVERHEATING,
+OR DAMAGE TO COMPUTE DEVICES) INCURRED WHILE RUNNING CUDA WORKLOADS.
+
+The use of CUDA workloads carries inherent hardware risk. The user is solely
+responsible for ensuring that their hardware (GPU, driver, cooling, power
+supply) is adequate for the workloads they run. The authors assume no
+liability for any hardware damage, data loss, or other loss resulting from
+the use of this software or the bundled CUDA Python components.

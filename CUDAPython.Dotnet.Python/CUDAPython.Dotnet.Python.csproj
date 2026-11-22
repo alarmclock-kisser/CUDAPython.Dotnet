@@ -15,12 +15,21 @@
   </ItemGroup>
 
   <Target Name="ValidateBundledPythonRuntime" BeforeTargets="Build" Condition="'$(CUDAPythonProvisionEnvironment)' == 'true'">
-    <Error Condition="'$(OS)' != 'Windows_NT'" Text="The bundled CPython runtime currently supports Windows x64 only. Set CUDAPythonProvisionEnvironment=false to build the managed wrapper only." />
-    <Error Condition="'$(RuntimeIdentifier)' != '' and '$(RuntimeIdentifier)' != 'win-x64'" Text="The bundled CPython runtime supports only the win-x64 RID." />
+    <Error Condition="'$(RuntimeIdentifier)' != '' and '$(RuntimeIdentifier)' != 'win-x64' and '$(RuntimeIdentifier)' != 'linux-x64'" Text="The bundled CPython runtime supports the win-x64 and linux-x64 RIDs (x64 only). Set CUDAPythonProvisionEnvironment=false to build the managed wrapper only." />
   </Target>
 
-  <Target Name="ProvisionBundledPythonRuntime" AfterTargets="Build" Condition="'$(CUDAPythonProvisionEnvironment)' == 'true'">
-    <Exec Command="powershell.exe -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\..\scripts\Update-CudaPythonEnvironment.ps1&quot; -EnvironmentPath &quot;$(TargetDir)python-env&quot; $(CUDAPythonEnvironmentUpdateArgument)" />
+  <!-- Provision the Windows x64 Python environment (default when no RID or win-x64). -->
+  <Target Name="ProvisionBundledPythonRuntimeWin" AfterTargets="Build" Condition="'$(CUDAPythonProvisionEnvironment)' == 'true' and ('$(RuntimeIdentifier)' == '' or '$(RuntimeIdentifier)' == 'win-x64') and '$(OS)' == 'Windows_NT'">
+    <Exec Command="powershell.exe -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\..\scripts\Update-CudaPythonEnvironment.ps1&quot; -EnvironmentPath &quot;$(TargetDir)python-env-win-x64&quot; -RuntimeId win-x64 $(CUDAPythonEnvironmentUpdateArgument)" />
+  </Target>
+
+  <!--
+    Provision the Linux x64 Python environment.
+    On Windows this requires WSL; on a Linux host it runs natively.
+    The target is skipped if the environment already exists (idempotent).
+  -->
+  <Target Name="ProvisionBundledPythonRuntimeLinux" AfterTargets="Build" Condition="'$(CUDAPythonProvisionEnvironment)' == 'true' and '$(RuntimeIdentifier)' == 'linux-x64'">
+    <Exec Command="powershell.exe -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\..\scripts\Update-CudaPythonEnvironment.ps1&quot; -EnvironmentPath &quot;$(TargetDir)python-env-linux-x64&quot; -RuntimeId linux-x64 $(CUDAPythonEnvironmentUpdateArgument)" />
   </Target>
 
 </Project>

@@ -21,11 +21,15 @@
              Link="tools\python-runtime-win-x64.json"
              CopyToOutputDirectory="PreserveNewest"
              CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="..\scripts\python-runtime-linux-x64.json"
+             Link="tools\python-runtime-linux-x64.json"
+             CopyToOutputDirectory="PreserveNewest"
+             CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
   <Target Name="CopyBundledPythonRuntimeToApiOutput" AfterTargets="Build">
     <ItemGroup>
-      <ApiPythonFile Include="..\CUDAPython.Dotnet.Python\bin\$(Configuration)\net10.0\python-env\**\*" />
+      <ApiPythonFile Include="..\CUDAPython.Dotnet.Python\bin\$(Configuration)\net10.0\python-env-win-x64\**\*" />
     </ItemGroup>
     <Copy SourceFiles="@(ApiPythonFile)"
           DestinationFiles="@(ApiPythonFile->'$(TargetDir)python-env\%(RecursiveDir)%(Filename)%(Extension)')"
@@ -34,7 +38,7 @@
 
   <Target Name="CopyBundledPythonRuntimeToApiPublish" AfterTargets="Publish">
     <ItemGroup>
-      <ApiPythonPublishFile Include="..\CUDAPython.Dotnet.Python\bin\$(Configuration)\net10.0\python-env\**\*" />
+      <ApiPythonPublishFile Include="..\CUDAPython.Dotnet.Python\bin\$(Configuration)\net10.0\python-env-win-x64\**\*" />
     </ItemGroup>
     <Copy SourceFiles="@(ApiPythonPublishFile)"
           DestinationFiles="@(ApiPythonPublishFile->'$(PublishDir)python-env\%(RecursiveDir)%(Filename)%(Extension)')"

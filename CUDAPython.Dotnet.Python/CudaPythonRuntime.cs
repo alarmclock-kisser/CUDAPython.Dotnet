@@ -198,7 +198,7 @@ public sealed class CudaPythonRuntime
     public static CudaPythonRuntime Initialize(CudaPythonRuntimeOptions? options = null)
     {
         options ??= CudaPythonRuntimeOptions.LoadFromFile(
-            Path.Combine(AppContext.BaseDirectory, "python-env", "runtime.json"));
+            ResolveDefaultRuntimeConfigPath());
         ValidateOptions(options);
 
         lock (InitializationLock)
@@ -478,6 +478,53 @@ public sealed class CudaPythonRuntime
         }
     }
 
+    /// <summary>
+    /// Resolves the default runtime.json path based on the active runtime identifier.
+    /// When the consuming project is built for a specific RID (win-x64 or linux-x64),
+    /// the NuGet contentFiles are extracted to python-env-&lt;rid&gt;/; otherwise the
+    /// generic python-env/ directory is used.
+    /// </summary>
+    private static string ResolveDefaultRuntimeConfigPath()
+    {
+        var baseDir = AppContext.BaseDirectory;
+
+        // If the consumer app was built with a specific RID, the python-env
+        // content was extracted to python-env-<rid>/ alongside the assemblies.
+        var rid = GetActiveRuntimeId();
+        if (rid is not null)
+        {
+            var ridSpecific = Path.Combine(baseDir, $"python-env-{rid}", "runtime.json");
+            if (File.Exists(ridSpecific))
+            {
+                return ridSpecific;
+            }
+        }
+
+        // Fallback: generic python-env/ directory (used when no RID is set,
+        // or when the environment was provisioned without a RID suffix).
+        return Path.Combine(baseDir, "python-env", "runtime.json");
+    }
+
+    /// <summary>
+    /// Returns the active runtime identifier (e.g. "win-x64", "linux-x64") if the
+    /// process is running under a RID-specific build, or null otherwise.
+    /// </summary>
+    private static string? GetActiveRuntimeId()
+    {
+        // When a .NET app is published or built for a specific RID, the
+        // runtime identifier is available via the runtimeconfig or the
+        // System.Runtime.InteropServices namespace.
+        if (OperatingSystem.IsWindows() && RuntimeInformation.ProcessArchitecture == Architecture.X64)
+        {
+            return "win-x64";
+        }
+        if (OperatingSystem.IsLinux() && RuntimeInformation.ProcessArchitecture == Architecture.X64)
+        {
+            return "linux-x64";
+        }
+        return null;
+    }
+
     private static void ValidateOptions(CudaPythonRuntimeOptions options)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(options.PackageRootModule);
@@ -489,7 +536,13 @@ public sealed class CudaPythonRuntime
         if (string.Equals(options.RuntimeId, "win-x64", StringComparison.OrdinalIgnoreCase) &&
             (!OperatingSystem.IsWindows() || RuntimeInformation.ProcessArchitecture != Architecture.X64))
         {
-            throw new PlatformNotSupportedException("The bundled CPython runtime supports Windows x64 only.");
+            throw new PlatformNotSupportedException("The bundled CPython runtime (win-x64) supports Windows x64 only.");
+        }
+
+        if (string.Equals(options.RuntimeId, "linux-x64", StringComparison.OrdinalIgnoreCase) &&
+            (!OperatingSystem.IsLinux() || RuntimeInformation.ProcessArchitecture != Architecture.X64))
+        {
+            throw new PlatformNotSupportedException("The bundled CPython runtime (linux-x64) supports Linux x64 only.");
         }
     }
 

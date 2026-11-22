@@ -6,11 +6,15 @@
 	<Nullable>enable</Nullable>
 	<IsPackable>true</IsPackable>
 	<IncludeBuildOutput>false</IncludeBuildOutput>
-	<PackageId>CUDAPython.Dotnet.win-x64</PackageId>
-	<Version>0.1.1</Version>
-	<Description>Self-contained Windows x64 .NET wrapper for CUDA Python, including CPython and pip dependencies.</Description>
+	<PackageId>CUDAPython.Dotnet</PackageId>
+	<Version>0.2.0</Version>
+	<Description>Self-contained .NET wrapper for CUDA Python, including CPython and pip dependencies. Supports Windows x64 and Linux x64.</Description>
 	  <PackageReadmeFile>README.md</PackageReadmeFile>
-	  <PackageTags>cuda;python;win-x64</PackageTags>
+	  <PackageTags>cuda;python;win-x64;linux-x64;gpu</PackageTags>
+	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
+	  <ProjectUrl>https://github.com/alarmclock-kisser/CUDAPython.Dotnet</ProjectUrl>
+	  <RepositoryUrl>https://github.com/alarmclock-kisser/CUDAPython.Dotnet</RepositoryUrl>
+	  <RepositoryType>git</RepositoryType>
 	  <!-- Python DLLs and virtual-environment scripts are bundled runtime content, not .NET references or NuGet install scripts. -->
 	<NoWarn>$(NoWarn);NU5100;NU5110;NU5111</NoWarn>
   </PropertyGroup>
@@ -21,7 +25,9 @@
   </ItemGroup>
 
   <ItemGroup>
-	<None Include="..\README.md" Pack="true" PackagePath="/" />
+	<None Include="..\README.md" Pack="true" PackagePath="\" />
+	<None Include="..\LICENSE" Pack="true" PackagePath="\" />
+	<None Include="..\NOTICE" Pack="true" PackagePath="\" />
 	<None Include="..\CUDAPython.Dotnet.Python\bin\$(Configuration)\net10.0\CUDAPython.Dotnet.Python.dll"
 		  Pack="true"
 		  PackagePath="lib/net10.0/" />
@@ -30,16 +36,30 @@
 		  PackagePath="lib/net10.0/" />
   </ItemGroup>
 
-  <Target Name="IncludeBundledPythonEnvironment" BeforeTargets="_GetPackageFiles">
-	<Exec Command="powershell.exe -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\..\scripts\Update-CudaPythonEnvironment.ps1&quot; -EnvironmentPath &quot;$(MSBuildProjectDirectory)\..\CUDAPython.Dotnet.Python\bin\$(Configuration)\net10.0\python-env&quot; -Upgrade" />
+  <!-- Provision the Windows x64 Python environment (pip refresh). -->
+  <Target Name="IncludeBundledPythonEnvironmentWin" BeforeTargets="_GetPackageFiles" Condition="'$(OS)' == 'Windows_NT'">
+	<Exec Command="powershell.exe -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\..\scripts\Update-CudaPythonEnvironment.ps1&quot; -EnvironmentPath &quot;$(MSBuildProjectDirectory)\..\CUDAPython.Dotnet.Python\bin\$(Configuration)\net10.0\python-env-win-x64&quot; -RuntimeId win-x64 -Upgrade" />
 	<ItemGroup>
-		<Content Include="..\CUDAPython.Dotnet.Python\bin\$(Configuration)\net10.0\python-env\**\*"
-			   Exclude="..\CUDAPython.Dotnet.Python\bin\$(Configuration)\net10.0\python-env\**\.*">
-		<Pack>true</Pack>
-		<PackagePath>contentFiles/any/net10.0/python-env/%(RecursiveDir)%(Filename)%(Extension)</PackagePath>
-		<PackageCopyToOutput>true</PackageCopyToOutput>
-		<BuildAction>Content</BuildAction>
-	  </Content>
+		<Content Include="..\CUDAPython.Dotnet.Python\bin\$(Configuration)\net10.0\python-env-win-x64\**\*"
+			   Exclude="..\CUDAPython.Dotnet.Python\bin\$(Configuration)\net10.0\python-env-win-x64\**\.*">
+			<Pack>true</Pack>
+			<PackagePath>contentFiles/any/net10.0/win-x64/python-env/%(RecursiveDir)%(Filename)%(Extension)</PackagePath>
+			<PackageCopyToOutput>true</PackageCopyToOutput>
+			<BuildAction>Content</BuildAction>
+		 </Content>
+	</ItemGroup>
+  </Target>
+
+  <!-- Provision the Linux x64 Python environment. Requires WSL on Windows or runs natively on Linux. -->
+  <Target Name="IncludeBundledPythonEnvironmentLinux" BeforeTargets="_GetPackageFiles" Condition="Exists('..\CUDAPython.Dotnet.Python\bin\$(Configuration)\net10.0\python-env-linux-x64\runtime.json')">
+	<ItemGroup>
+		<Content Include="..\CUDAPython.Dotnet.Python\bin\$(Configuration)\net10.0\python-env-linux-x64\**\*"
+			   Exclude="..\CUDAPython.Dotnet.Python\bin\$(Configuration)\net10.0\python-env-linux-x64\**\.*">
+			<Pack>true</Pack>
+			<PackagePath>contentFiles/any/net10.0/linux-x64/python-env/%(RecursiveDir)%(Filename)%(Extension)</PackagePath>
+			<PackageCopyToOutput>true</PackageCopyToOutput>
+			<BuildAction>Content</BuildAction>
+		 </Content>
 	</ItemGroup>
   </Target>
 

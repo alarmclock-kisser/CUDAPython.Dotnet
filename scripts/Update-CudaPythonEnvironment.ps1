@@ -1,11 +1,16 @@
 [CmdletBinding()]
 param(
-	[string]$EnvironmentPath = (Join-Path $PSScriptRoot "..\CUDAPython.Dotnet.Python\bin\Release\net10.0\python-env"),
+	[string]$EnvironmentPath = (Join-Path $PSScriptRoot "..\CUDAPython.Dotnet.Pythonin\Release
+et10.0\python-env-win-x64"),
+	[string]$RuntimeId = "win-x64",
 	[switch]$Upgrade
 )
 
 $ErrorActionPreference = "Stop"
-$manifestPath = Join-Path $PSScriptRoot "python-runtime-win-x64.json"
+if ($RuntimeId -ne "win-x64" -and $RuntimeId -ne "linux-x64") {
+	throw "Supported RuntimeId values: win-x64, linux-x64. Got: $RuntimeId"
+}
+$manifestPath = Join-Path $PSScriptRoot "python-runtime-$RuntimeId.json"
 $manifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
 
 function Get-Sha256Hash([string]$FilePath) {
@@ -20,13 +25,15 @@ function Get-Sha256Hash([string]$FilePath) {
 	}
 }
 
-if ($env:OS -ne "Windows_NT" -or $env:PROCESSOR_ARCHITECTURE -ne "AMD64") {
-	throw "The bundled Python runtime currently supports Windows x64 only."
+if ($RuntimeId -eq "win-x64") {
+	if ($env:OS -ne "Windows_NT" -or $env:PROCESSOR_ARCHITECTURE -ne "AMD64") {
+		throw "The win-x64 bundled Python runtime requires Windows x64."
+	}
 }
 
 $resolvedEnvironmentPath = [System.IO.Path]::GetFullPath($EnvironmentPath)
 $runtimeConfigPath = Join-Path $resolvedEnvironmentPath "runtime.json"
-$pythonExecutable = Join-Path $resolvedEnvironmentPath "python\python.exe"
+$pythonExecutable = Join-Path $resolvedEnvironmentPath $manifest.pythonExecutable
 
 if (-not $Upgrade -and (Test-Path $runtimeConfigPath) -and (Test-Path $pythonExecutable)) {
 	$currentRuntime = Get-Content -LiteralPath $runtimeConfigPath -Raw | ConvertFrom-Json
@@ -45,6 +52,47 @@ $backupPath = "$resolvedEnvironmentPath.backup-$([guid]::NewGuid().ToString('N')
 
 New-Item -ItemType Directory -Path $environmentParent -Force | Out-Null
 New-Item -ItemType Directory -Path $downloadDirectory -Force | Out-Null
+
+$runtimeMetadataScript = @'
+import importlib.metadata
+import json
+import os
+import platform
+from pathlib import Path
+import sys
+
+prefix = Path(sys.prefix).resolve()
+ver = f"{sys.version_info.major}{sys.version_info.minor}"
+if platform.system() == "Windows":
+    lib = prefix / f"python{ver}.dll"
+else:
+    lib = prefix / "lib" / f"libpython{ver}.so.1.0"
+    if not lib.is_file():
+        lib = prefix / "lib" / f"libpython{ver}.so"
+if not lib.is_file():
+    raise FileNotFoundError(f"CPython shared library not found: {lib}")
+
+python_paths = []
+for entry in sys.path:
+    if not entry:
+        continue
+    resolved = Path(entry).resolve()
+    try:
+        relative = resolved.relative_to(prefix)
+    except ValueError:
+        continue
+    python_paths.append((Path("python") / relative).as_posix())
+
+print(json.dumps({
+    "pythonDllPath": (Path("python") / lib.relative_to(prefix)).as_posix(),
+    "pythonHome": "python",
+    "pythonPath": os.pathsep.join(python_paths),
+    "pythonVersion": ".".join(map(str, sys.version_info[:3])),
+    "cudaPythonVersion": importlib.metadata.version("cuda-python"),
+    "runtimeId": "__RUNTIME_ID__"
+}, indent=2))
+'@
+$runtimeMetadataScript = $runtimeMetadataScript -replace "__RUNTIME_ID__", $RuntimeId
 
 try {
 	if (-not (Test-Path $archivePath) -or
@@ -71,9 +119,13 @@ try {
 		throw "Failed to extract the bundled CPython runtime."
 	}
 
-	$stagedPython = Join-Path $stagingPath "python\python.exe"
-	if (-not (Test-Path $stagedPython) -or -not (Test-Path (Join-Path $stagingPath "python\python311.dll"))) {
-		throw "The CPython archive does not contain the expected Python 3.11 x64 runtime files."
+	$stagedPython = Join-Path $stagingPath $manifest.pythonExecutable
+	$stagedLib = Join-Path $stagingPath $manifest.pythonSharedLibrary
+	if (-not (Test-Path $stagedPython)) {
+		throw "The CPython archive does not contain the expected Python executable: $($manifest.pythonExecutable)"
+	}
+	if (-not (Test-Path $stagedLib)) {
+		throw "The CPython archive does not contain the expected shared library: $($manifest.pythonSharedLibrary)"
 	}
 
 	$pipCache = Join-Path $env:TEMP "CUDAPython.Dotnet\pip-cache"
@@ -97,43 +149,12 @@ try {
 		[string[]]$requirements,
 		[System.Text.UTF8Encoding]::new($false))
 
-	$runtimeMetadataScript = @'
-import importlib.metadata
-import json
-import os
-from pathlib import Path
-import sys
-
-prefix = Path(sys.prefix).resolve()
-dll = prefix / f"python{sys.version_info.major}{sys.version_info.minor}.dll"
-if not dll.is_file():
-	raise FileNotFoundError(f"CPython shared library not found: {dll}")
-
-python_paths = []
-for entry in sys.path:
-	if not entry:
-		continue
-	resolved = Path(entry).resolve()
-	try:
-		relative = resolved.relative_to(prefix)
-	except ValueError:
-		continue
-	python_paths.append((Path("python") / relative).as_posix())
-
-print(json.dumps({
-	"pythonDllPath": (Path("python") / dll.relative_to(prefix)).as_posix(),
-	"pythonHome": "python",
-	"pythonPath": os.pathsep.join(python_paths),
-	"pythonVersion": ".".join(map(str, sys.version_info[:3])),
-	"cudaPythonVersion": importlib.metadata.version("cuda-python"),
-	"runtimeId": "win-x64"
-}, indent=2))
-'@
 	$runtimeMetadataScriptPath = Join-Path $stagingPath "_write_runtime_metadata.py"
 	[System.IO.File]::WriteAllText(
 		$runtimeMetadataScriptPath,
 		$runtimeMetadataScript,
 		[System.Text.UTF8Encoding]::new($false))
+
 	$runtimeMetadataLines = & $stagedPython $runtimeMetadataScriptPath
 	if ($LASTEXITCODE -ne 0) {
 		throw "Failed to inspect the bundled Python environment."
