@@ -109,10 +109,11 @@ CudaDriver.LaunchKernel(function, gridDimX: 1, gridDimY: 1, gridDimZ: 1,
 ```powershell
 dotnet test CUDAPython.Dotnet.Tests\CUDAPython.Dotnet.Tests.csproj
 dotnet pack CUDAPython.Dotnet.Nuget\CUDAPython.Dotnet.Nuget.csproj -c Release
+dotnet pack CUDAPython.Dotnet.Nuget\CUDAPython.Dotnet.Nuget.csproj -c Release -p:CUDAPythonWindowsOnlyPackage=true
 dotnet run --project CUDAPython.Dotnet.Api\CUDAPython.Dotnet.Api.csproj
 ```
 
-Build and pack require network access to the pinned CPython release and PyPI. The deployed application does not. Set `CUDAPythonProvisionEnvironment=false` only when intentionally building the managed wrapper without its bundled runtime. On Windows, the build provisions the `win-x64` environment only; the `linux-x64` environment must be provisioned on a Linux host (or WSL) and is included in the package when present.
+Build and pack require network access to the pinned CPython release and PyPI. The deployed application does not. Set `CUDAPythonProvisionEnvironment=false` only when intentionally building the managed wrapper without its bundled runtime. On Windows, the build provisions the `win-x64` environment only; the `linux-x64` environment must be provisioned on a Linux host (or WSL) and is included in the platform-agnostic package when present. Add `-p:CUDAPythonWindowsOnlyPackage=true` to pack the separate `CUDAPython.Dotnet.win-x64` package (version 0.3.0) without Linux runtime content.
 
 ## REST API
 

@@ -19,6 +19,12 @@
 	<NoWarn>$(NoWarn);NU5100;NU5110;NU5111</NoWarn>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(CUDAPythonWindowsOnlyPackage)' == 'true'">
+	<PackageId>CUDAPython.Dotnet.win-x64</PackageId>
+	<Description>Self-contained Windows x64 .NET wrapper for CUDA Python, including CPython and pip dependencies.</Description>
+	<PackageTags>cuda;python;win-x64;gpu</PackageTags>
+  </PropertyGroup>
+
   <ItemGroup>
 	<ProjectReference Include="..\CUDAPython.Dotnet.Python\CUDAPython.Dotnet.Python.csproj" PrivateAssets="all" />
 	<ProjectReference Include="..\CUDAPython.Dotnet.Bindings\CUDAPython.Dotnet.Bindings.csproj" PrivateAssets="all" />
@@ -58,7 +64,7 @@
   </Target>
 
   <!-- Provision the Linux x64 Python environment. Requires WSL on Windows or runs natively on Linux. -->
-  <Target Name="IncludeBundledPythonEnvironmentLinux" BeforeTargets="_GetPackageFiles" Condition="Exists('..\CUDAPython.Dotnet.Python\bin\$(Configuration)\net10.0\python-env-linux-x64\runtime.json')">
+	<Target Name="IncludeBundledPythonEnvironmentLinux" BeforeTargets="_GetPackageFiles" Condition="'$(CUDAPythonWindowsOnlyPackage)' != 'true' and Exists('..\CUDAPython.Dotnet.Python\bin\$(Configuration)\net10.0\python-env-linux-x64\runtime.json')">
 	<ItemGroup>
 		<Content Include="..\CUDAPython.Dotnet.Python\bin\$(Configuration)\net10.0\python-env-linux-x64\**\*"
 			   Exclude="..\CUDAPython.Dotnet.Python\bin\$(Configuration)\net10.0\python-env-linux-x64\**\.*">

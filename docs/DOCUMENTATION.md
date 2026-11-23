@@ -385,7 +385,7 @@ Zusätzlich werden `scripts\*.ps1`/`*.json` als `tools\…` in die API-Output ko
    `PackagePath=contentFiles/any/net10.0/win-x64/python-env/…`,
    `PackageCopyToOutput=true`, `BuildAction=Content` hinzu.
 
-**Target `IncludeBundledPythonEnvironmentLinux`** (`BeforeTargets=_GetPackageFiles`, nur wenn `python-env-linux-x64/runtime.json` existiert):
+**Target `IncludeBundledPythonEnvironmentLinux`** (`BeforeTargets=_GetPackageFiles`, nur wenn `python-env-linux-x64/runtime.json` existiert und `CUDAPythonWindowsOnlyPackage` nicht `true` ist):
 
 1. Fügt `python-env-linux-x64\**\*` als `Content` mit
    `PackagePath=contentFiles/any/net10.0/linux-x64/python-env/…` hinzu.
@@ -401,6 +401,9 @@ dotnet test CUDAPython.Dotnet.Tests\CUDAPython.Dotnet.Tests.csproj
 
 # Self-contained NuGet-Paket (Release, mit pip-Refresh)
 dotnet pack CUDAPython.Dotnet.Nuget\CUDAPython.Dotnet.Nuget.csproj -c Release
+
+# Windows-x64-only Paket CUDAPython.Dotnet.win-x64 (Version 0.3.0)
+dotnet pack CUDAPython.Dotnet.Nuget\CUDAPython.Dotnet.Nuget.csproj -c Release -p:CUDAPythonWindowsOnlyPackage=true
 
 # REST-API starten
 dotnet run --project CUDAPython.Dotnet.Api\CUDAPython.Dotnet.Api.csproj
