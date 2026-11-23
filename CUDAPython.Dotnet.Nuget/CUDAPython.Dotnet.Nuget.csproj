@@ -7,8 +7,8 @@
 	<IsPackable>true</IsPackable>
 	<IncludeBuildOutput>false</IncludeBuildOutput>
 	<PackageId>CUDAPython.Dotnet</PackageId>
-	<Version>0.2.0</Version>
-	<Description>Self-contained .NET wrapper for CUDA Python, including CPython and pip dependencies. Supports Windows x64 and Linux x64.</Description>
+	<Version>0.3.0</Version>
+	<Description>Self-contained .NET wrapper for CUDA Python, including CPython and pip dependencies. Supports Windows x64 and Linux x64. Includes curated, statically-typed C# bindings (CudaDriver, Nvrtc, Nvml) in addition to the reflection-based dynamic API.</Description>
 	  <PackageReadmeFile>README.md</PackageReadmeFile>
 	  <PackageTags>cuda;python;win-x64;linux-x64;gpu</PackageTags>
 	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -21,6 +21,7 @@
 
   <ItemGroup>
 	<ProjectReference Include="..\CUDAPython.Dotnet.Python\CUDAPython.Dotnet.Python.csproj" PrivateAssets="all" />
+	<ProjectReference Include="..\CUDAPython.Dotnet.Bindings\CUDAPython.Dotnet.Bindings.csproj" PrivateAssets="all" />
 	<PackageReference Include="pythonnet" Version="3.2.1" />
   </ItemGroup>
 
@@ -32,6 +33,12 @@
 		  Pack="true"
 		  PackagePath="lib/net10.0/" />
 	  <None Include="..\CUDAPython.Dotnet.Python\bin\$(Configuration)\net10.0\CUDAPython.Dotnet.Python.xml"
+		  Pack="true"
+		  PackagePath="lib/net10.0/" />
+	  <None Include="..\CUDAPython.Dotnet.Bindings\bin\$(Configuration)\net10.0\CUDAPython.Dotnet.Bindings.dll"
+		  Pack="true"
+		  PackagePath="lib/net10.0/" />
+	  <None Include="..\CUDAPython.Dotnet.Bindings\bin\$(Configuration)\net10.0\CUDAPython.Dotnet.Bindings.xml"
 		  Pack="true"
 		  PackagePath="lib/net10.0/" />
   </ItemGroup>

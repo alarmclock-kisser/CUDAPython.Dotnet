@@ -1,0 +1,371 @@
+{
+  "driver": {
+    "init_version": [
+      {
+        "name": "cuInit",
+        "sig": "(Flags)"
+      },
+      {
+        "name": "cuDriverGetVersion",
+        "sig": "()"
+      }
+    ],
+    "device_query": [
+      {
+        "name": "cuDeviceGetCount",
+        "sig": "()"
+      },
+      {
+        "name": "cuDeviceGetName",
+        "sig": "(length, dev)"
+      },
+      {
+        "name": "cuDeviceGetAttribute",
+        "sig": "(attrib: 'CUdevice_attribute', dev)"
+      },
+      {
+        "name": "cuDeviceTotalMem",
+        "sig": "(dev)"
+      },
+      {
+        "name": "cuDeviceGetUuid",
+        "sig": "(dev)"
+      },
+      {
+        "name": "cuDeviceGetLuid",
+        "sig": "(dev)"
+      },
+      {
+        "name": "cuDeviceGetDefaultMemPool",
+        "sig": "(dev)"
+      }
+    ],
+    "context": [
+      {
+        "name": "cuCtxCreate",
+        "sig": "(ctxCreateParams: 'Optional[CUctxCreateParams]', flags, dev)"
+      },
+      {
+        "name": "cuCtxDestroy",
+        "sig": "(ctx)"
+      },
+      {
+        "name": "cuCtxSynchronize",
+        "sig": "()"
+      },
+      {
+        "name": "cuCtxGetCurrent",
+        "sig": "()"
+      },
+      {
+        "name": "cuCtxPushCurrent",
+        "sig": "(ctx)"
+      },
+      {
+        "name": "cuCtxPopCurrent",
+        "sig": "()"
+      },
+      {
+        "name": "cuCtxSetCurrent",
+        "sig": "(ctx)"
+      },
+      {
+        "name": "cuCtxGetDevice",
+        "sig": "()"
+      },
+      {
+        "name": "cuCtxGetApiVersion",
+        "sig": "(ctx)"
+      },
+      {
+        "name": "cuCtxGetFlags",
+        "sig": "()"
+      },
+      {
+        "name": "cuCtxSetFlags",
+        "sig": "(flags)"
+      },
+      {
+        "name": "cuCtxGetStreamPriorityRange",
+        "sig": "()"
+      },
+      {
+        "name": "cuDevicePrimaryCtxRetain",
+        "sig": "(dev)"
+      },
+      {
+        "name": "cuDevicePrimaryCtxRelease",
+        "sig": "(dev)"
+      },
+      {
+        "name": "cuDevicePrimaryCtxSetFlags",
+        "sig": "(dev, flags)"
+      },
+      {
+        "name": "cuDevicePrimaryCtxGetState",
+        "sig": "(dev)"
+      }
+    ],
+    "memory": [
+      {
+        "name": "cuMemAlloc",
+        "sig": "(bytesize)"
+      },
+      {
+        "name": "cuMemFree",
+        "sig": "(dptr)"
+      },
+      {
+        "name": "cuMemAllocHost",
+        "sig": "(bytesize)"
+      },
+      {
+        "name": "cuMemFreeHost",
+        "sig": "(p)"
+      },
+      {
+        "name": "cuMemHostAlloc",
+        "sig": "(bytesize, Flags)"
+      },
+      {
+        "name": "cuMemHostRegister",
+        "sig": "(p, bytesize, Flags)"
+      },
+      {
+        "name": "cuMemHostUnregister",
+        "sig": "(p)"
+      },
+      {
+        "name": "cuMemHostGetDevicePointer",
+        "sig": "(p, Flags)"
+      },
+      {
+        "name": "cuMemcpyHtoD",
+        "sig": "(dstDevice, srcHost, ByteCount)"
+      },
+      {
+        "name": "cuMemcpyDtoH",
+        "sig": "(dstHost, srcDevice, ByteCount)"
+      },
+      {
+        "name": "cuMemcpyDtoD",
+        "sig": "(dstDevice, srcDevice, ByteCount)"
+      },
+      {
+        "name": "cuMemcpyPeer",
+        "sig": "(dstDevice, dstContext, srcDevice, srcContext, ByteCount)"
+      },
+      {
+        "name": "cuMemGetAddressRange",
+        "sig": "(dptr)"
+      },
+      {
+        "name": "cuMemPrefetchAsync",
+        "sig": "(devPtr, count, location: 'CUmemLocation', flags, hStream)"
+      },
+      {
+        "name": "cuMemAdvise",
+        "sig": "(devPtr, count, advice: 'CUmem_advise', location: 'CUmemLocation')"
+      },
+      {
+        "name": "cuMemAllocManaged",
+        "sig": "(bytesize, flags)"
+      }
+    ],
+    "module": [
+      {
+        "name": "cuModuleLoad",
+        "sig": "(fname)"
+      },
+      {
+        "name": "cuModuleLoadData",
+        "sig": "(image)"
+      },
+      {
+        "name": "cuModuleUnload",
+        "sig": "(hmod)"
+      },
+      {
+        "name": "cuModuleGetFunction",
+        "sig": "(hmod, name)"
+      },
+      {
+        "name": "cuModuleGetGlobal",
+        "sig": "(hmod, name)"
+      },
+      {
+        "name": "cuLibraryUnload",
+        "sig": "(library)"
+      },
+      {
+        "name": "cuLibraryGetModule",
+        "sig": "(library)"
+      },
+      {
+        "name": "cuLibraryGetKernel",
+        "sig": "(library, name)"
+      },
+      {
+        "name": "cuKernelGetFunction",
+        "sig": "(kernel)"
+      }
+    ],
+    "function": [
+      {
+        "name": "cuFuncGetAttribute",
+        "sig": "(attrib: 'CUfunction_attribute', hfunc)"
+      },
+      {
+        "name": "cuFuncSetAttribute",
+        "sig": "(hfunc, attrib: 'CUfunction_attribute', value)"
+      },
+      {
+        "name": "cuLaunchKernel",
+        "sig": "(f, gridDimX, gridDimY, gridDimZ, blockDimX, blockDimY, blockDimZ, sharedMemBytes, hStream, kernelParams, extra)"
+      },
+      {
+        "name": "cuLaunchCooperativeKernel",
+        "sig": "(f, gridDimX, gridDimY, gridDimZ, blockDimX, blockDimY, blockDimZ, sharedMemBytes, hStream, kernelParams)"
+      },
+      {
+        "name": "cuMemsetD16",
+        "sig": "(dstDevice, us, N)"
+      },
+      {
+        "name": "cuMemsetD32",
+        "sig": "(dstDevice, ui, N)"
+      },
+      {
+        "name": "cuMemsetD8",
+        "sig": "(dstDevice, uc, N)"
+      },
+      {
+        "name": "cuMemsetD2D16",
+        "sig": "(dstDevice, dstPitch, us, Width, Height)"
+      },
+      {
+        "name": "cuMemsetD2D32",
+        "sig": "(dstDevice, dstPitch, ui, Width, Height)"
+      },
+      {
+        "name": "cuMemsetD2D8",
+        "sig": "(dstDevice, dstPitch, uc, Width, Height)"
+      },
+      {
+        "name": "cuMemcpyHtoDAsync",
+        "sig": "(dstDevice, srcHost, ByteCount, hStream)"
+      },
+      {
+        "name": "cuMemcpyDtoHAsync",
+        "sig": "(dstHost, srcDevice, ByteCount, hStream)"
+      },
+      {
+        "name": "cuMemcpyDtoDAsync",
+        "sig": "(dstDevice, srcDevice, ByteCount, hStream)"
+      },
+      {
+        "name": "cuMemcpyPeerAsync",
+        "sig": "(dstDevice, dstContext, srcDevice, srcContext, ByteCount, hStream)"
+      },
+      {
+        "name": "cuMemsetD16Async",
+        "sig": "(dstDevice, us, N, hStream)"
+      },
+      {
+        "name": "cuMemsetD32Async",
+        "sig": "(dstDevice, ui, N, hStream)"
+      },
+      {
+        "name": "cuMemsetD8Async",
+        "sig": "(dstDevice, uc, N, hStream)"
+      },
+      {
+        "name": "cuMemsetD2D16Async",
+        "sig": "(dstDevice, dstPitch, us, Width, Height, hStream)"
+      },
+      {
+        "name": "cuMemsetD2D32Async",
+        "sig": "(dstDevice, dstPitch, ui, Width, Height, hStream)"
+      },
+      {
+        "name": "cuMemsetD2D8Async",
+        "sig": "(dstDevice, dstPitch, uc, Width, Height, hStream)"
+      }
+    ],
+    "stream": [
+      {
+        "name": "cuStreamCreate",
+        "sig": "(Flags)"
+      },
+      {
+        "name": "cuStreamDestroy",
+        "sig": "(hStream)"
+      },
+      {
+        "name": "cuStreamSynchronize",
+        "sig": "(hStream)"
+      },
+      {
+        "name": "cuStreamWaitEvent",
+        "sig": "(hStream, hEvent, Flags)"
+      },
+      {
+        "name": "cuStreamQuery",
+        "sig": "(hStream)"
+      },
+      {
+        "name": "cuStreamGetPriority",
+        "sig": "(hStream)"
+      },
+      {
+        "name": "cuStreamGetFlags",
+        "sig": "(hStream)"
+      },
+      {
+        "name": "cuStreamBeginCapture",
+        "sig": "(hStream, mode: 'CUstreamCaptureMode')"
+      },
+      {
+        "name": "cuStreamEndCapture",
+        "sig": "(hStream)"
+      },
+      {
+        "name": "cuStreamIsCapturing",
+        "sig": "(hStream)"
+      }
+    ],
+    "event": [
+      {
+        "name": "cuEventCreate",
+        "sig": "(Flags)"
+      },
+      {
+        "name": "cuEventDestroy",
+        "sig": "(hEvent)"
+      },
+      {
+        "name": "cuEventRecord",
+        "sig": "(hEvent, hStream)"
+      },
+      {
+        "name": "cuEventSynchronize",
+        "sig": "(hEvent)"
+      },
+      {
+        "name": "cuEventQuery",
+        "sig": "(hEvent)"
+      },
+      {
+        "name": "cuEventElapsedTime",
+        "sig": "(hStart, hEnd)"
+      }
+    ]
+  },
+  "nvrtc": {
+    "compile": []
+  },
+  "nvml": {
+    "system": [],
+    "device": []
+  }
+}

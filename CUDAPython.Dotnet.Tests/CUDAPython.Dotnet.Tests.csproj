@@ -16,6 +16,7 @@
 
   <ItemGroup>
 	<ProjectReference Include="..\CUDAPython.Dotnet.Python\CUDAPython.Dotnet.Python.csproj" />
+	<ProjectReference Include="..\CUDAPython.Dotnet.Bindings\CUDAPython.Dotnet.Bindings.csproj" />
   </ItemGroup>
 
   <Target Name="CopyBundledPythonRuntimeForTests" AfterTargets="Build">

@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	<TargetFramework>net10.0</TargetFramework>
+	<ImplicitUsings>enable</ImplicitUsings>
+	<Nullable>enable</Nullable>
+	<RootNamespace>CUDAPython.Dotnet.Bindings</RootNamespace>
+	<GenerateDocumentationFile>true</GenerateDocumentationFile>
+	<Description>Curated, statically-typed C# bindings for CUDA Python (cuda-bindings). Complements the reflection-based CUDAPython.Dotnet.Python API with explicit, type-safe methods.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+	<ProjectReference Include="..\CUDAPython.Dotnet.Python\CUDAPython.Dotnet.Python.csproj" PrivateAssets="all" />
+	<PackageReference Include="pythonnet" Version="3.2.1" />
+  </ItemGroup>
+
+</Project>
